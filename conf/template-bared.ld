@@ -1,3 +1,5 @@
+/* Based on rtenv in NCKU: http://wiki.csie.ncku.edu.tw/embedded/rtenv */
+
 ENTRY(Reset_Handler)
 
 MEMORY
