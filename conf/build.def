@@ -13,6 +13,11 @@ CMSIS_DIR=$(LIB_DIR)/CMSIS
 LDSCRIPT?=$(PRJ_ROOT)/conf/bared.ld
 
 # --------------------------------------------------------------------
+# Where are the binaries gone?
+# --------------------------------------------------------------------
+OUT_DIR=$(PRJ_ROOT)/build
+
+# --------------------------------------------------------------------
 # Platform Settings
 # --------------------------------------------------------------------
 PLATFORM = STM32F429_439xx
@@ -23,8 +28,6 @@ PLATFORM = STM32F429_439xx
 SPL_INC=$(STM_DIR)/inc
 CMSIS_COMMON_INC = $(CMSIS_DIR)/Include
 CMSIS_STM32_INC  = $(CMSIS_DIR)/Device/ST/STM32F4xx/Include
-
-OUT_DIR=$(PRJ_ROOT)/build
 
 # --------------------------------------------------------------------
 # Start up files
