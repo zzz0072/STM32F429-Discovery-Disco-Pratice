@@ -1,0 +1,51 @@
+# --------------------------------------------------------------------
+# Toolchain
+# --------------------------------------------------------------------
+TOOL_CHAIN_PREFIX=arm-none-eabi
+
+# --------------------------------------------------------------------
+# Path Setting
+# --------------------------------------------------------------------
+PRJ_ROOT?=..
+LIB_DIR=$(PRJ_ROOT)/libraries/STM32F4xx_DSP_StdPeriph_Lib_V1.6.1/Libraries
+STM_DIR=$(LIB_DIR)/STM32F4xx_StdPeriph_Driver
+CMSIS_DIR=$(LIB_DIR)/CMSIS
+LDSCRIPT?=$(PRJ_ROOT)/conf/bared.ld
+
+# --------------------------------------------------------------------
+# Platform Settings
+# --------------------------------------------------------------------
+PLATFORM = STM32F429_439xx
+
+# --------------------------------------------------------------------
+# Include header files
+# --------------------------------------------------------------------
+SPL_INC=$(STM_DIR)/inc
+CMSIS_COMMON_INC = $(CMSIS_DIR)/Include
+CMSIS_STM32_INC  = $(CMSIS_DIR)/Device/ST/STM32F4xx/Include
+
+OUT_DIR=$(PRJ_ROOT)/build
+
+# --------------------------------------------------------------------
+# Start up files
+# --------------------------------------------------------------------
+CMSIS_STARTUP_SRC = $(CMSIS_DIR)/Device/ST/STM32F4xx/Source/Templates/gcc_ride7/startup_stm32f429_439xx.s
+CMSIS_SYSTEM_SRC  = $(CMSIS_DIR)/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
+
+# --------------------------------------------------------------------
+# Compilation Flags
+# --------------------------------------------------------------------
+BUILD_MODE = DEBUG
+
+ifeq ($(BUILD_MODE), DEBUG)
+        CFLAGS += -DUSE_FULL_ASSERT -g3
+endif
+
+ARCH_FLAGS = -mthumb -mcpu=cortex-m4
+LDFLAGS += -T$(LDSCRIPT) $(ARCH_FLAGS)
+
+CFLAGS += $(ARCH_FLAGS)
+CFLAGS += -I. -I$(SPL_INC) -I$(CMSIS_COMMON_INC) -I$(CMSIS_STM32_INC)
+CFLAGS += -D$(PLATFORM) -DUSE_STDPERIPH_DRIVER $(FULLASSERT)
+CFLAGS += -Wall -Werror -MMD -std=c99
+CFLAGS += -fno-common -ffreestanding -O0
