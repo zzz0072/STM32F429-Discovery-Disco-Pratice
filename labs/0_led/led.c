@@ -11,7 +11,7 @@ void sleep(uint32_t nSec);
 
 int main(int argc, char **argv)
 {
-    static int LEDVal = 0;
+    int LEDVal = 0;
     GPIO_InitTypeDef LED_InitStruct;
 
     /* Setup LED */
