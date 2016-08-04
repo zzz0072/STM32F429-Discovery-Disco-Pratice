@@ -26,32 +26,32 @@ void setupUSART(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
-    /* Enable GPIOA clock */
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+    /* Enable GPIOC clock */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
-    /* Enable USART1 clock */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+    /* Enable USART6 clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);
 
-    /* Connect USART1_Tx instead of PA9 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+    /* Connect USART6_Tx instead of PC6 */
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_USART6);
 
-    /* Connect USART1_Rx instead of PA10 */
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+    /* Connect USART6_Rx instead of PC7 */
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_USART6);
 
     /* Configure USART Tx as alternate function  */
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
 
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /* Configure USART Rx as alternate function  */
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_10;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_7;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /********************************************
      * USART set started here
@@ -67,18 +67,18 @@ void setupUSART(void)
     USART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
     /* Apply USART settings */
-    USART_Init(USART1, &USART_InitStruct);
+    USART_Init(USART6, &USART_InitStruct);
 
     /* Enable USART */
-    USART_Cmd(USART1, ENABLE);
+    USART_Cmd(USART6, ENABLE);
 }
 
 int putchar(int c)
 {
     /* Wait until data was tranferred */
-    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    while(USART_GetFlagStatus(USART6, USART_FLAG_TXE) == RESET);
 
-    USART1->DR = (c & 0xff);
+    USART_SendData(USART6, c);
     return 0;
 }
 
