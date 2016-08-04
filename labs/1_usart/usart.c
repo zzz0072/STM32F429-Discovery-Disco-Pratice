@@ -7,17 +7,16 @@
 
 void setupUSART(void);
 void print(char *str);
+void sleep(uint32_t nSec);
 
 int main(int argc, char **argv)
 {
-    char my_str[]="Hello World\n";
-
     /* Setup USART */
     setupUSART();
 
     /* Print Hello World Repeatly */
     while(1) {
-        print(my_str);
+        print("Hello World\n\r");
     }
 
     return 0;
@@ -25,6 +24,38 @@ int main(int argc, char **argv)
 
 void setupUSART(void)
 {
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    /* Enable GPIOA clock */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+
+    /* Enable USART1 clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+    /* Connect USART1_Tx instead of PA9 */
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+
+    /* Connect USART1_Rx instead of PA10 */
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+
+    /* Configure USART Tx as alternate function  */
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /* Configure USART Rx as alternate function  */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_10;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /********************************************
+     * USART set started here
+     ********************************************/
     USART_InitTypeDef USART_InitStruct;
 
     /* 115200, N81  */
@@ -35,32 +66,7 @@ void setupUSART(void)
     USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-    /* Enable UART clock */
-    RCC_AHB1PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-
-    /* Connect USART1_Tx*/
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9 ,GPIO_AF_USART1);
-
-    /* Connect USART1_Rx*/
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
-
-    /* Configure USART Tx as alternate function  */
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-
-    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    /* Configure USART Rx as alternate function  */
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_10;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    /* USART configuration */
+    /* Apply USART settings */
     USART_Init(USART1, &USART_InitStruct);
 
     /* Enable USART */
@@ -79,8 +85,8 @@ int putchar(int c)
 void print(char *str)
 {
     assert_param(str != 0);
-    while(*str != 0) {
-        putchar(*str);
+    while(*str) {
+        putchar((int)*str);
         str++;
     }
 }
