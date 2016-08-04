@@ -37,3 +37,14 @@ $(OUT_DIR)/%.o: %.c
 
 clean:
 	rm -fr $(OUT_DIR) gdb.txt
+
+flash: $(OUT_DIR)/$(TARGET).bin
+	openocd -f interface/stlink-v2.cfg  \
+            -f target/stm32f4x.cfg      \
+            -c "init"                   \
+            -c "reset init"             \
+            -c "stm32f2x unlock 0"      \
+            -c "flash probe 0"          \
+            -c "flash info 0"           \
+            -c "flash write_image erase $< 0x8000000" \
+            -c "reset run" -c shutdown
