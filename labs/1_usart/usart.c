@@ -39,9 +39,6 @@ void setupUSART(void)
     /* Enable GPIOC clock */
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
-    /* Enable USART6 clock */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);
-
     /* Connect USART6_Tx instead of PC6 */
     GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_USART6);
 
@@ -62,6 +59,9 @@ void setupUSART(void)
      * USART set started here
      ********************************************/
     USART_InitTypeDef USART_InitStruct;
+
+    /* Enable USART6 clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);
 
     /* 115200, N81  */
     USART_InitStruct.USART_BaudRate = 115200;
