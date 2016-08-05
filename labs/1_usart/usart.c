@@ -3,20 +3,30 @@
 #include <stm32f4xx_gpio.h>
 #include <stm32f4xx_usart.h>
 
-/* Hello world from USART */
-
 void setupUSART(void);
+
+/* helper functions */
 void print(char *str);
-void sleep(uint32_t nSec);
+char getchar(void);
+void putchar(char c);
 
 int main(int argc, char **argv)
 {
     /* Setup USART */
     setupUSART();
 
-    /* Print Hello World Repeatly */
+    /* Greeting */
+    print("Hello World\n");
+    print("\r> ");
     while(1) {
-        print("Hello World\n\r");
+        /* Echo a character */
+        char c = getchar();
+        putchar(c);
+
+        /* Show prompt with enter */
+        if (c == '\n') {
+            print("\r> ");
+        }
     }
 
     return 0;
@@ -38,19 +48,14 @@ void setupUSART(void)
     /* Connect USART6_Rx instead of PC7 */
     GPIO_PinAFConfig(GPIOC, GPIO_PinSource7, GPIO_AF_USART6);
 
-    /* Configure USART Tx as alternate function  */
+    /* Configure USART Tx (PC6) and Rx (PC7) as alternate function  */
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
+    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
 
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-    /* Configure USART Rx as alternate function  */
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_7;
     GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /********************************************
@@ -73,20 +78,25 @@ void setupUSART(void)
     USART_Cmd(USART6, ENABLE);
 }
 
-int putchar(int c)
+char getchar(void)
+{
+    while(USART_GetFlagStatus(USART6, USART_FLAG_RXNE) == RESET);
+    return USART6->DR & 0xff;
+}
+
+void putchar(char c)
 {
     /* Wait until data was tranferred */
     while(USART_GetFlagStatus(USART6, USART_FLAG_TXE) == RESET);
 
-    USART_SendData(USART6, c);
-    return 0;
+    USART6->DR = (c & 0xff);
 }
 
 void print(char *str)
 {
     assert_param(str != 0);
     while(*str) {
-        putchar((int)*str);
+        putchar(*str);
         str++;
     }
 }
