@@ -37,7 +37,6 @@ union param_t
 {
     int   pdInt;
     void *pdPtr;
-    char *pdChrPtr;
 };
 
 typedef union param_t param;
