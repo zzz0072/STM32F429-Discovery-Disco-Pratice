@@ -15,7 +15,7 @@ C_OBJS = $(patsubst %.c, %.o, $(SRCS))   # translate *.c to *.o
 OBJS   = $(patsubst %.s, %.o, $(C_OBJS)) # also *.s to *.o files
 
 OUT_OBJS = $(addprefix $(OUT_DIR)/, $(OBJS))
-
+DEPS     = $(patsubst %.o, %.d, $(OUT_OBJS))   # Handle Header files
 #----------------------------------------------------------------------------------
 # Build here
 #----------------------------------------------------------------------------------
@@ -53,3 +53,5 @@ run: $(OUT_DIR)/$(TARGET).bin
             -c "reset run"
 clean:
 	rm -fr $(OUT_DIR) gdb.txt
+
+-include $(DEPS)
